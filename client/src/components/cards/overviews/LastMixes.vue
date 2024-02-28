@@ -8,8 +8,8 @@
             <div v-for="(item, index) in mixes" :key="index" class="accordion-item">
 
                 <h2 class="accordion-header" :id="'headingM' + index">
-                    <button class="accordion-button" type="button" data-bs-toggle="collapse" :data-bs-target="'#collapseM' + index" :aria-expanded="index === 0 ? 'true' : 'false'" :aria-controls="'collapse' + index">
-                            {{ new Date(item.dateTime).toLocaleString() }}
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" :data-bs-target="'#collapseM' + index" :aria-expanded="index === 1 ? 'true' : 'false'" :aria-controls="'collapse' + index">
+                            {{ convertDateTime(item.dateTime) }}
                     </button>
                 </h2>
 
@@ -33,7 +33,7 @@
 
 <script>
     import { ref } from 'vue';
-    import { getMixes } from '../../../apiConfig';
+    import { getMixesLastWeeks } from '../../../apiConfig';
     
     var listOfMixes = ref([]);
 
@@ -41,14 +41,26 @@
         name: 'LastMixes',
         setup() {
             // Set a default for the mixes value in return data
-            getMixes().then((mixes) => {
+            getMixesLastWeeks(5).then((mixes) => {
                 listOfMixes.value = mixes;
             });
+            // mixes = http://https://floatingfarmfood.azurewebsites.net/server/
         },
         data() {
             return {
                 mixes: listOfMixes
             };
+        },
+        methods: {
+            convertDateTime(dateTime) {
+                // var date = new Date(dateTime).getFullYear() + "-" + (new Date(dateTime).getMonth() + 1) + "-" + new Date(dateTime).getDate();
+                var date = (new Date(dateTime).getDate() > 9 ? '' : 0) + (new Date(dateTime).getDate()) 
+                    + "–" + ((new Date(dateTime).getMonth() + 1) > 9 ? '' : 0) + (new Date(dateTime).getMonth() + 1) 
+                    + "–" + new Date(dateTime).getFullYear();
+                var time = ((new Date(dateTime).getHours() - 1 ) > 9 ? '' : 0) + (new Date(dateTime).getHours() - 1)
+                    + ":" + (new Date(dateTime).getMinutes() > 9 ? '' : 0) + new Date(dateTime).getMinutes();
+                return date + " " + time;
+            }
         }
     }
 </script>

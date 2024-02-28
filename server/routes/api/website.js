@@ -674,14 +674,15 @@ router.post('/updateStock', passport.authenticate('oauth-bearer', { session: fal
 );
 
 // Get contributions, created in the last two weeks
-router.get('/getContributions', passport.authenticate('oauth-bearer', { session: false }),
+router.get('/getContributionsLastWeeks', passport.authenticate('oauth-bearer', { session: false }),
     (req, res) => {
         // Check for Admin role
         validRole(req.authInfo['oid'], [2]).then(() => {
             // Retrieve date and time two weeks back
-            const twoWeeksAgo = new Date();
-            twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
-            const oldDateTime = twoWeeksAgo.toISOString().slice(0, 10) + " " + twoWeeksAgo.toTimeString().slice(0, 5);
+            const weeksAgo = new Date();
+            var weeks = req.query.weeks;
+            weeksAgo.setDate(weeksAgo.getDate() - (7 * weeks));
+            const oldDateTime = weeksAgo.toISOString().slice(0, 10) + " " + weeksAgo.toTimeString().slice(0, 5);
 
             query(
                 `SELECT pic.contributionID, s.name AS supplierName, c.dateTime, c.dateTimeOfTransport, p.name AS productName, pic.quantity, cs.name AS containerName, c.supplierNotes
@@ -736,14 +737,15 @@ router.get('/getContributions', passport.authenticate('oauth-bearer', { session:
 );
 
 // Get mixes, created in the last two weeks
-router.get('/getMixes', passport.authenticate('oauth-bearer', { session: false }),
+router.get('/getMixesLastWeeks', passport.authenticate('oauth-bearer', { session: false }),
     (req, res) => {
         // Check for Admin role
         validRole(req.authInfo['oid'], [2]).then(() => {
             // Retrieve date and time two weeks back
-            const twoWeeksAgo = new Date();
-            twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
-            const oldDateTime = twoWeeksAgo.toISOString().slice(0, 10) + " " + twoWeeksAgo.toTimeString().slice(0, 5);
+            const weeksAgo = new Date();
+            var weeks = req.query.weeks;
+            weeksAgo.setDate(weeksAgo.getDate() - (7 * weeks));
+            const oldDateTime = weeksAgo.toISOString().slice(0, 10) + " " + weeksAgo.toTimeString().slice(0, 5);
 
             query(`
                 SELECT pim.mixID, m.dateTime, p.name AS productName, pim.kilos, m.notes

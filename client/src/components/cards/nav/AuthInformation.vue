@@ -1,6 +1,6 @@
 <template>
     <!-- User is not authenticated -->
-    <button v-if="!authenticated" v-on:click="signIn" class="ff-button">Sign in</button>
+    <button v-if="!authenticated" v-on:click="signIn" class="ff-button">Log in</button>
     
     <!-- User is authenticated -->
     <div v-if="authenticated" class="text-center">
@@ -8,7 +8,7 @@
         &nbsp;
         <button v-on:click="editProfile" class="ff-button">Edit profile</button>
         &nbsp;
-        <button v-on:click="signOut" class="ff-button">Sign out</button>
+        <button v-on:click="signOut" class="ff-button">Log out</button>
     </div>
 </template>
   

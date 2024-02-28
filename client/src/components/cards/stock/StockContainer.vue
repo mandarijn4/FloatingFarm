@@ -84,7 +84,7 @@
             }
         },
         computed: {
-            // If you can't edit the values, dont show products that aren't present, otherwise, show all products
+            // If you can't edit the values, don't show products that aren't present, otherwise, show all products
             filteredStockProducts() {
                 return this.stockProducts.filter((product) => {
                     return (!this.canEdit && product.kilosInStock !== 0) || this.canEdit;
