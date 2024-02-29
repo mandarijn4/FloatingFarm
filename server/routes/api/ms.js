@@ -16,7 +16,7 @@ function query(query, values, callback) {
 }
 
 // Get all mixes with average nutrients per cow
-router.post('/getMixes', (req, res) => {
+router.get('/getMixes', (req, res) => {
     if (req.body.key === process.env.API_KEY){
         query(`
             SELECT
