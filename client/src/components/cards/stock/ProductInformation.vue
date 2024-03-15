@@ -10,14 +10,14 @@
 
 			<!-- Input weight, check pages for canEdit -->
 			<div v-if="canEdit">
-				<div class="input-group mb-3">
-					<input type="number" v-model="kilos" @input="kilosChanged" class="form-control no-spinners">
+				<div class="input-group mb-3" style="padding-left: 30%; padding-right: 30%;">
+					<input type="number" v-model="kilos" @input="kilosChanged" class="form-control no-spinners" style="text-align: right;">
 					<label class="input-group-text">Kilo</label>
 				</div>
 			</div>
 
 			<!-- Display weight, check pages for canEdit -->
-			<div v-else>
+			<div v-else style="text-align: center;">
 				{{ kilos }} Kilo
 			</div>
 

@@ -331,3 +331,26 @@ export function getNutrientsOfMixes() {
     });
   });
 }
+
+// Delete a mix
+export function deleteMix(id) {
+  return new Promise((resolve, reject) => {
+    // Try with stored access token
+    simplePostApi(env.apiBase + "/api/website/deleteMix", store.accessToken, {mixID: id})
+    .then(() => {
+      resolve();
+    })
+    // Try with acquired access token
+    .catch(async () => {
+      await getTokenRedirect();
+      simplePostApi(env.apiBase + "/api/website/deleteMix", store.accessToken, {mixID: id})
+      .then(() => {
+        resolve();
+      })
+      .catch((error) => {
+        console.error("Failed to delete mix: ", error);
+        reject();
+      });
+    });
+  });
+}

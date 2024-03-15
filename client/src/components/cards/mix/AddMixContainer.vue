@@ -171,7 +171,7 @@
 					// Reset variables
 					this.kilosGras = 600;
 					this.kilosBierbostel = 500;
-					this.kilosDDGSProticorn = 300;
+					this.kilosDDGSProticorn = 42;
 					this.kilosSinaasappelschillen = 0;
 					this.extraProductsInMix = [];
 					const newDate = new Date();
@@ -222,7 +222,7 @@
 				products: listOfProducts,
 				kilosGras: 600,
 				kilosBierbostel: 500,
-				kilosDDGSProticorn: 300,
+				kilosDDGSProticorn: 42,
 				kilosSinaasappelschillen: 0,
 				extraProductsInMix: [],
 				date: currentDate,
