@@ -384,6 +384,9 @@ router.post('/addMix', passport.authenticate('oauth-bearer', { session: false })
                            registeredProducts,
                            (results, fields) => {
                               console.log("registered products finished");
+                              if (results.affectedRows > 0) {
+                                 updateStock(req.body.productsInMix, mixID);
+                              }
                            }
                         );
                      }
@@ -606,7 +609,9 @@ router.post('/updateStock', passport.authenticate('oauth-bearer', { session: fal
       // Check for Admin or Farmer role
       validRole(req.authInfo['oid'], [2, 5]).then(() => {
          // Check if all given values are ok
+         // var mixID = req.query.mixID.toString();
          var stockProductsOk = req.body.hasOwnProperty('stockProducts') && req.body.stockProducts !== null;
+         var mixID = req.body.mixID;
          try {
             req.body.stockProducts.forEach((product) => {
                const idOk = typeof product.ID === 'number' && product.ID > 0;
@@ -626,40 +631,13 @@ router.post('/updateStock', passport.authenticate('oauth-bearer', { session: fal
             console.log("body: ", req.body);
             res.status(400).send();
          } else {
-            // Example
-
-            // UPDATE products
-            // SET kilosInStock = 
-            //     CASE 
-            //         WHEN ID = 1 THEN 30
-            //         WHEN ID = 2 THEN 20
-            //         ELSE kilosInStock
-            //     END
-            // WHERE ID IN (0,1,2);
-
-            // Parts of the query
-            var firstPartQuery = 'UPDATE products SET kilosInStock = CASE ';
-            var rows = [];
-            var secondPartQuery = 'ELSE kilosInStock END WHERE ID IN (0';
-            var ids = [];
-
-            // Create dynamic parts of the query
-            req.body.stockProducts.forEach((product) => {
-               firstPartQuery += 'WHEN ID = ? THEN ? ';
-               rows.push(product.ID, product.kilosInStock);
-
-               secondPartQuery += ',?'
-               ids.push(product.ID);
-            });
-
-            // Finalisation
-            const finalQuery = firstPartQuery + secondPartQuery + ');';
-            const values = [...rows, ...ids];
-
             // Save stock
             query(
-               finalQuery,
-               values,
+               `UPDATE products, productsinmix
+               SET products.kilosInStock = greatest(products.kilosInStock - productsinmix.kilos, 0)
+               WHERE products.ID = productsinmix.productID
+               AND productsinmix.mixID = ?;`,
+               [req.body.mixID],
                (results, fields) => {
                   if (results) {
                      res.status(200).send();
@@ -862,5 +840,29 @@ router.delete('/deleteMix', passport.authenticate('oauth-bearer', { session: fal
       });
    }
 );
+
+// Get ID of last entered mix
+router.get('/getLastMixID', passport.authenticate('oauth-bearer', { session: false }),
+   (req, res) => {
+      // Check for Admin role
+      validRole(req.authInfo['oid'], [2, 5]).then(() => {
+         query(
+            `SELECT MAX(ID) AS lastID FROM mixes;`,
+            [],
+            (results, fields) => {
+               if (results) {
+                  res.status(200).send(results);
+               } else {
+                  res.status(500).send();
+               }
+            }
+         );
+      }
+      ).catch(() => {
+         res.status(401).send();
+      });
+   }
+);
+
 
 module.exports = router;

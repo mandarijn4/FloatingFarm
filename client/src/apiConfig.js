@@ -191,6 +191,24 @@ export function addMix(productsInMix, dateTime, notes) {
   });
 }
 
+export function getLastMixID() {
+   return new Promise((resolve, reject) => {
+      // Try with stored access token
+      simpleGetApi(env.apiBase + "/api/website/getLastMixID", store.accessToken).then((mixID) => {
+         resolve(mixID);
+      // Try with acquired access token
+      }).catch(async () => {
+         await getTokenRedirect();
+         simpleGetApi(env.apiBase + "/api/website/getLastMixID", store.accessToken).then((mixID) => {
+            resolve(mixID);
+         }).catch((error) => {
+            console.error("Failed to get last mix ID: ", error);
+            reject();
+         });
+      });
+   });
+}
+
 // Retrieve containers
 export function getContainers() {
   return new Promise((resolve, reject) => {
@@ -253,17 +271,17 @@ export function getStock() {
 }
 
 // Update the stock
-export function updateStock(stockProducts) {
+export function updateStock() {
   return new Promise((resolve, reject) => {
     // Try with stored access token
-    simplePostApi(env.apiBase + "/api/website/updateStock", store.accessToken, {stockProducts: stockProducts})
+    simplePostApi(env.apiBase + "/api/website/updateStock", store.accessToken)
     .then(() => {
       resolve();
     })
     // Try with acquired access token
     .catch(async () => {
       await getTokenRedirect();
-      simplePostApi(env.apiBase + "/api/website/updateStock", store.accessToken, {stockProducts: stockProducts})
+      simplePostApi(env.apiBase + "/api/website/updateStock", store.accessToken)
       .then(() => {
         resolve();
       })
