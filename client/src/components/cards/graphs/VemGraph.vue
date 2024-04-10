@@ -63,7 +63,9 @@ export default {
          489.0, 459.6, 508.6, 444.0, 466.7, 437.6, 470.6, 
          480.6, 423.6, 415.6, 406.0, 409.1, 446.2, 424.6, 
          386.0, 453.1, 466.5, 475.2, 486.9, 476.8, 424.8,
-         442.7, 439.2, 444.6, 420.5, 436.8, 455.3, 464.9];
+         442.7, 439.2, 444.6, 420.5, 436.8, 455.3, 464.9,
+         421.1, 416.6, 416.5, 375.7, 373.2, 385.2, 378.3, 
+         430.4, 393.7, 361.8, 341.2, 377.6, 336.9, 373.1];
       var numbersOfCows = [
          29, 28, 28, 28, 28, 28, 28, 
          28, 28, 30, 30, 30, 30, 29, 
@@ -76,10 +78,9 @@ export default {
          26, 26, 26, 26, 24, 24, 24, 
          24, 23, 23, 23, 23, 23, 24,
          24, 24, 24, 24, 24, 23, 23,
-         23, 23, 23, 23, 23, 23, 23];
-		// for (let i = numbersOfCows.length; i >= (numbersOfCows.length - 50); i--) {
-		// 	milkProduced[latestDate.length - i - 1] = Math.round((knownMilkProduced[knownMilkProduced.length - i] / numbersOfCows[numbersOfCows.length - i]) * 100) / 100;
-		// }
+         23, 23, 23, 23, 23, 23, 23,
+         23, 22, 22, 22, 22, 22, 22,
+         22, 22, 22, 21, 21, 21, 21];
       for (let i = 0; i <= allDates.length; i++) {
          milkProduced[startDate + i] = Math.round((knownMilkProduced[i] / numbersOfCows[i]) * 100) / 100;
       }
@@ -98,7 +99,7 @@ export default {
 			datasets: [
 				{
 					label: "Average milk production",
-					data: milkProduced.slice(milkProduced.length - 57, milkProduced.length),
+					data: milkProduced.slice(milkProduced.length - 56, milkProduced.length),
 					yAxisID: "A",
 					borderColor: '#bdbdbd',
 					backgroundColor: '#ffffff',

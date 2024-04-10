@@ -161,12 +161,6 @@ export default {
          addMix(productsInMix, this.date + " " + this.time, this.notes)
             .then(() => {
                console.log("Succeeded to add mix");
-               // Update stock
-               // getLastMixID().then((id) => {
-               //    mixID.value = id;
-               // });
-               // console.log("Last mix ID: ", mixID.value[0].lastID);
-               // updateStock(mixID.value[0].lastID);
                // Reset variables
                this.kilosGras = 600;
                this.kilosBierbostel = 500;
@@ -177,6 +171,13 @@ export default {
                this.date = newDate.toISOString().slice(0, 10);
                this.time = newDate.toTimeString().slice(0, 5);
                this.notes = '';
+
+               // Refresh stock
+               getProducts().then((products) => {
+                  console.log("retrieved products: ", products);
+                  listOfProducts.value = products;
+               });
+               location.reload();
 
                // Indicate success to user
                this.alerts.push({

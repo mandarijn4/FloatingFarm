@@ -5,11 +5,8 @@
 
       <!-- Product inputs -->
       <div v-for="(extraProduct, index) in extraProductsInContribution" :key="index">
-         <ExtraProduct 
-            :products="products" 
-            :containers="containers" 
-            :index="index"
-               @updateExtraProductEvent="handleExtraProduct" />
+         <ExtraProduct :products="products" :containers="containers" :index="index"
+            @updateExtraProductEvent="handleExtraProduct" />
          <br />
       </div>
 
@@ -155,6 +152,13 @@ export default {
                this.selectedSupplier = null;
                this.notes = '';
 
+               // Refresh stock
+               getProducts().then((products) => {
+                  console.log("retrieved products: ", products);
+                  listOfProducts.value = products;
+               });
+               location.reload();
+
                // Indicate success to user
                this.alerts.push({
                   type: 'alert-success',
@@ -175,6 +179,11 @@ export default {
                   title: 'Error',
                   message: 'Your contribution has not been added, check your input fields or refresh the page and try again ;)',
                });
+
+               // Auto hide alert after 10 seconds
+               setTimeout(() => {
+                  this.hideAlert(this.alerts.length - 1);
+               }, 10000);
             });
       },
       // Remove the alert at the specified index

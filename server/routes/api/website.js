@@ -376,17 +376,36 @@ router.post('/addMix', passport.authenticate('oauth-bearer', { session: false })
                      if (registeredProducts.length != 0) {
                         for (var i = 0; i < registeredProducts.length / 3 - 1; i++) {
                            registeredProductsQuery += '(?, ?, ?), ';
+                           query(
+                              `UPDATE products SET kilosInStock = GREATEST(kilosInStock - ?, 0) WHERE ID = ?;`,
+                              [registeredProducts[i * 3 + 2], registeredProducts[i * 3 + 1]],
+                              ((results, fields) => {
+                                 if (results.affectedRows == 1) {
+                                    console.log("Stock updated");
+                                 } else {
+                                    console.log("Stock update failed");
+                                 }
+                              })
+                           );
                         }
                         registeredProductsQuery += '(?, ?, ?);';
+                        query(
+                           `UPDATE products SET kilosInStock = GREATEST(kilosInStock - ?, 0) WHERE ID = ?;`,
+                           [registeredProducts[registeredProducts.length - 1], registeredProducts[registeredProducts.length - 2]],
+                           ((results, fields) => {
+                              if (results.affectedRows == 1) {
+                                 console.log("Stock updated");
+                              } else {
+                                 console.log("Stock update failed");
+                              }
+                           })
+                        );
 
                         query(
                            registeredProductsQuery,
                            registeredProducts,
                            (results, fields) => {
                               console.log("registered products finished");
-                              if (results.affectedRows > 0) {
-                                 updateStock(req.body.productsInMix, mixID);
-                              }
                            }
                         );
                      }
@@ -444,15 +463,15 @@ router.get('/getContainers', passport.authenticate('oauth-bearer', { session: fa
 // Helper function to add contribution
 function addContribution(supplierId, currentDateTime, dateTime, isDelivery, notes, productsInContribution, res) {
    query(
-      `INSERT INTO contributions (supplierID, dateTime, dateTimeOfTransport, isDelivery, supplierNotes)
-        VALUES (?, ?, ?, ?, ?);`,
-      [supplierId, currentDateTime, dateTime, isDelivery, notes],
+      `INSERT INTO contributions (supplierID, dateTime, dateTimeOfTransport, isDelivery, supplierNotes, accorded)
+        VALUES (?, ?, ?, ?, ?, ?);`,
+      [supplierId, currentDateTime, dateTime, isDelivery, notes, 'false'],
       ((results, fields) => {
          if (results.affectedRows == 1) {
             const contributionId = results.insertId;
             var productsFound = [];
             var products = [];
-            var productsQuery = "INSERT INTO productsincontribution (contributionID, productID, containerID, unregisteredProductName, quantity, unregisteredContainerName) VALUES ";
+            var productsQuery = "INSERT INTO productsincontribution (contributionID, productID, containerID, unregisteredProductName, quantity, unregisteredContainerName, accorded) VALUES ";
 
             // Ignore empty, duplicate or weightless products
             productsInContribution.forEach((product) => {
@@ -461,7 +480,7 @@ function addContribution(supplierId, currentDateTime, dateTime, isDelivery, note
                   const productName = (product.id === null) ? product.name : null;
                   const containerName = (product.containerId === null) ? product.containerName : null;
                   // Add to products that will be send with query
-                  products.push(contributionId, product.id, product.containerId, productName, product.quantity, containerName);
+                  products.push(contributionId, product.id, product.containerId, productName, product.quantity, containerName, 'false');
 
                   // Update found products
                   if (product.id !== null) {
@@ -475,10 +494,34 @@ function addContribution(supplierId, currentDateTime, dateTime, isDelivery, note
             // If present, save products
             if (products.length != 0) {
                // Add as many slots as there are records to be added
-               for (var i = 0; i < products.length / 6 - 1; i++) {
-                  productsQuery += '(?, ?, ?, ?, ?, ?), ';
+               for (var i = 0; i < products.length / 7 - 1; i++) {
+                  productsQuery += '(?, ?, ?, ?, ?, ?, ?), ';
+                  // Update stock
+                  query(
+                     `UPDATE products SET kilosInStock = GREATEST(kilosInStock + ?, 0) WHERE ID = ?;`,
+                     [products[i * 7 + 4], products[i * 7 + 1]],
+                     ((results, fields) => {
+                        if (results.affectedRows == 1) {
+                           console.log("Stock updated");
+                        } else {
+                           console.log("Stock update failed");
+                        }
+                     })
+                  );
                }
-               productsQuery += '(?, ?, ?, ?, ?, ?);';
+               productsQuery += '(?, ?, ?, ?, ?, ?, ?);';
+               // Update stock
+               query(
+                  `UPDATE products SET kilosInStock = GREATEST(kilosInStock + ?, 0) WHERE ID = ?;`,
+                  [products[products.length - 2], products[products.length - 6]],
+                  ((results, fields) => {
+                     if (results.affectedRows == 1) {
+                        console.log("Stock updated");
+                     } else {
+                        console.log("Stock update failed");
+                     }
+                  })
+               );
 
                // Save productsInContribution
                query(
@@ -564,6 +607,7 @@ router.post('/addContribution', passport.authenticate('oauth-bearer', { session:
 
                         // Add a contribution with retrieved supplier id
                         addContribution(supplierId, currentDateTime, req.body.dateTime, req.body.isDelivery, req.body.notes, req.body.productsInContribution, res);
+
                      } else {
                         res.status(500).send();
                      }
@@ -609,14 +653,14 @@ router.post('/updateStock', passport.authenticate('oauth-bearer', { session: fal
       // Check for Admin or Farmer role
       validRole(req.authInfo['oid'], [2, 5]).then(() => {
          // Check if all given values are ok
-         // var mixID = req.query.mixID.toString();
-         var stockProductsOk = req.body.hasOwnProperty('stockProducts') && req.body.stockProducts !== null;
-         var mixID = req.body.mixID;
+         var stockProductsOk = req.body.hasOwnProperty('products') && req.body.products !== null;
+         console.log("stockProductsOk: ", stockProductsOk);
          try {
-            req.body.stockProducts.forEach((product) => {
+            req.body.products.forEach((product) => {
                const idOk = typeof product.ID === 'number' && product.ID > 0;
                const kilosInStockOk = typeof product.kilosInStock === 'number' && product.kilosInStock >= 0;
-
+               console.log("Product: ", product.name)
+               console.log("idOk: ", idOk, "kilosInStockOk: ", kilosInStockOk);
                if (!(idOk && kilosInStockOk)) {
                   console.log("updateStock failed: ", idOk, kilosInStockOk);
                   stockProductsOk = false;
@@ -631,13 +675,36 @@ router.post('/updateStock', passport.authenticate('oauth-bearer', { session: fal
             console.log("body: ", req.body);
             res.status(400).send();
          } else {
+            // Example
+            // UPDATE products
+            // SET kilosInStock = 
+            //     CASE 
+            //         WHEN ID = 1 THEN 30
+            //         WHEN ID = 2 THEN 20
+            //         ELSE kilosInStock
+            //     END
+            // WHERE ID IN (0,1,2);
+            // Parts of the query
+            var firstPartQuery = 'UPDATE products SET kilosInStock = CASE ';
+            var rows = [];
+            var secondPartQuery = 'ELSE kilosInStock END WHERE ID IN (0';
+            var ids = [];
+            // Create dynamic parts of the query
+            req.body.products.forEach((product) => {
+               firstPartQuery += 'WHEN ID = ? THEN ? ';
+               rows.push(product.ID, product.kilosInStock);
+               secondPartQuery += ',?'
+               ids.push(product.ID);
+            });
+            // Finalisation
+            const finalQuery = firstPartQuery + secondPartQuery + ');';
+            const values = [...rows, ...ids];
+            console.log("finalQuery: ", finalQuery);
+
             // Save stock
             query(
-               `UPDATE products, productsinmix
-               SET products.kilosInStock = greatest(products.kilosInStock - productsinmix.kilos, 0)
-               WHERE products.ID = productsinmix.productID
-               AND productsinmix.mixID = ?;`,
-               [req.body.mixID],
+               finalQuery,
+               values,
                (results, fields) => {
                   if (results) {
                      res.status(200).send();
