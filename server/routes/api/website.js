@@ -494,6 +494,7 @@ function addContribution(supplierId, currentDateTime, dateTime, isDelivery, note
             // If present, save products
             if (products.length != 0) {
                // Add as many slots as there are records to be added
+               console.log("Needed slots: " + (products.length / 7));
                for (var i = 0; i < products.length / 7 - 1; i++) {
                   productsQuery += '(?, ?, ?, ?, ?, ?, ?), ';
                   // Update stock
@@ -544,15 +545,19 @@ function addContribution(supplierId, currentDateTime, dateTime, isDelivery, note
 router.post('/addContribution', passport.authenticate('oauth-bearer', { session: false }),
    (req, res) => {
       // Check for Supplier or Driver role
+      console.log("Check Role");
       validRole(req.authInfo['oid'], [3, 7]).then((roleId) => {
          // Check if all given values are ok
+         console.log("Check given values");
          const regex = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/;
          const dateTimeOk = req.body.hasOwnProperty('dateTime') && regex.test(req.body.dateTime);
          const isDeliveryOk = req.body.hasOwnProperty('isDelivery') && (req.body.isDelivery === true || req.body.isDelivery === false);
          const supplierIdOk = req.body.hasOwnProperty('supplierId') && ((roleId === 7) ? (typeof req.body.supplierId === 'number' && req.body.supplierId > 0) : req.body.supplierId === null);
          const notesOk = req.body.hasOwnProperty('notes') && (req.body.notes.length < 256 || req.body.notes === null);
+         const isAccordedOk = req.body.hasOwnProperty('isAccorded') && (req.body.isAccorded === true || req.body.isAccorded === false);
          var productsInContributionOk = req.body.hasOwnProperty('productsInContribution') && req.body.productsInContribution !== null;
          var allProductsInContributionEmpty = true;
+         console.log("Check products");
          try {
             req.body.productsInContribution.forEach((product) => {
                const registeredOk = typeof product.id === 'number' && product.id > 0;
@@ -579,7 +584,7 @@ router.post('/addContribution', passport.authenticate('oauth-bearer', { session:
             productsInContributionOk = false;
          }
          // If not, send code bad request
-         if (!dateTimeOk || !isDeliveryOk || !supplierIdOk || !notesOk || !productsInContributionOk) {
+         if (!dateTimeOk || !isDeliveryOk || !supplierIdOk || !notesOk || !productsInContributionOk || !isAccordedOk ) {
             console.log("body: ", req.body);
             res.status(400).send();
          } else {
@@ -606,7 +611,7 @@ router.post('/addContribution', passport.authenticate('oauth-bearer', { session:
                         const supplierId = results[0].supplierID;
 
                         // Add a contribution with retrieved supplier id
-                        addContribution(supplierId, currentDateTime, req.body.dateTime, req.body.isDelivery, req.body.notes, req.body.productsInContribution, res);
+                        addContribution(supplierId, currentDateTime, req.body.dateTime, req.body.isDelivery, req.body.notes, req.body.productsInContribution, req.body.isAccorded, res);
 
                      } else {
                         res.status(500).send();
@@ -616,7 +621,7 @@ router.post('/addContribution', passport.authenticate('oauth-bearer', { session:
                // User has driver role
             } else {
                // Add a contribution with given supplier id
-               addContribution(req.body.supplierId, currentDateTime, req.body.dateTime, req.body.isDelivery, req.body.notes, req.body.productsInContribution, res);
+               addContribution(req.body.supplierId, currentDateTime, req.body.dateTime, req.body.isDelivery, req.body.notes, req.body.productsInContribution, req.body.isAccorded, res);
             }
          }
       }).catch(() => {

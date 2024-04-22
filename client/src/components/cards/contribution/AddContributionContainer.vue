@@ -138,9 +138,9 @@ export default {
          ];
 
          console.log(productsInContribution);
-         console.log(this.date + " " + this.time, this.isDelivery, this.selectedSupplier, this.notes);
+         console.log(this.date + " " + this.time, this.isDelivery, this.selectedSupplier, this.notes, this.isAccorded);
 
-         addContribution(productsInContribution, this.date + " " + this.time, this.isDelivery, this.selectedSupplier, this.notes)
+         addContribution(productsInContribution, this.date + " " + this.time, this.isDelivery, this.selectedSupplier, this.notes, this.isAccorded)
             .then(() => {
                console.log("Succeeded to add contribution");
                // Reset variables
@@ -151,13 +151,6 @@ export default {
                this.isDelivery = true;
                this.selectedSupplier = null;
                this.notes = '';
-
-               // Refresh stock
-               getProducts().then((products) => {
-                  console.log("retrieved products: ", products);
-                  listOfProducts.value = products;
-               });
-               location.reload();
 
                // Indicate success to user
                this.alerts.push({
@@ -185,6 +178,12 @@ export default {
                   this.hideAlert(this.alerts.length - 1);
                }, 10000);
             });
+         // Refresh stock
+         getProducts().then((products) => {
+            console.log("retrieved products: ", products);
+            listOfProducts.value = products;
+         });
+         location.reload();
       },
       // Remove the alert at the specified index
       hideAlert(index) {
@@ -227,6 +226,7 @@ export default {
          containers: listOfContainers,
          suppliers: listOfSuppliers,
          selectedSupplier: null,
+         isAccorded: 'false',
          // Set a default for the array so that one empty product is displayed
          extraProductsInContribution: [{ id: null, name: '', quantity: 0, containerId: null, containerName: '' }],
          date: currentDate,

@@ -36,6 +36,28 @@ export function editProfile() {
    });
 }
 
+// function simpleJotformGetApi(endpoint) {
+//    return new Promise((resolve, reject) => {
+//       axios.get(endpoint)
+//       .then((response) => {
+//          resolve(response.data);
+//       }).catch(() => {
+//          reject();
+//       })
+//    })
+// }
+
+// function getBookings() {
+//    return new Promise((resolve, reject) => {
+//       simpleJotformGetApi("https://eu-api.jotform.com/form/240593413654356/submissions?apiKey=8dab64eac766d21f0780059859fafaa6").then((bookings) => {
+//          resolve(bookings);
+//       }).catch((error) => {
+//          console.error("Failed to get bookings: ", bookings);
+//          reject();
+//       })
+//    })
+// }
+
 // Call a GET endpoint and return a promise
 function simpleGetApi(endpoint, accessToken) {
    return new Promise((resolve, reject) => {
@@ -239,12 +261,13 @@ export function addContribution(productsInContribution, dateTime, isDelivery, su
          // Try with acquired access token
          .catch(async () => {
             await getTokenRedirect();
+            console.log("Acquired access token");
             simplePostApi(env.apiBase + "/api/website/addContribution", store.accessToken, { productsInContribution: productsInContribution, dateTime: dateTime, isDelivery: isDelivery, supplierId: supplierId, notes: notes })
                .then(() => {
                   resolve();
                })
                .catch((error) => {
-                  console.error("Failed to add contribution: ", error);
+                  console.log("Failed to add contribution 1: ", error);
                   reject();
                });
          });
