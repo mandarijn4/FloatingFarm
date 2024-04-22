@@ -33,7 +33,7 @@
                   <strong>Kosten mogelijke extra's: </strong> {{ item.answers[27].answer }} <br />
                   <strong>Laten we kennismaken: </strong> {{ item.answers[25].answer }} <br />
                   <strong>Terms/Conditions: </strong> {{ item.answers[80].answer }} <br />
-                  <strong>Afspraak datum: </strong> {{ printDate(item.answers[61].answer) }}
+                  <strong>Date: </strong> {{ cutDate(item) }}
                </div>
             </div>
          </div>
@@ -46,6 +46,7 @@ import { ref } from "vue";
 import { getBookings } from "../../../jotformApi";
 
 var listOfBookings = ref([]);
+// var date = "";
 // var sortedListOfBookings = ref([]);
 
 export default {
@@ -64,13 +65,18 @@ export default {
       }
    },
    methods: {
-      printDate(object) {
-         var date = object["date"];
-         return date;
+      cutDate(item) {
+         const output = item.answers[61].prettyFormat;
+         console.log(typeof(output));
+         const stringed = JSON.stringify(output);
+         console.log("Stringed date: ", stringed);
+         if (typeof output == 'undefined') {
+            return "";
+         } else {
+            const cutted = stringed.slice(0, 10);
+            return cutted;
+         }
       }
-   //    sortOutput(listOfBookings) {
-   //       var newest = null
-   //    }
    }
 }
 </script>
