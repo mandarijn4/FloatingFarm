@@ -21,25 +21,33 @@ const durationTime = (time) => {
    return interval;
 }
 
+const checkType = (output, type) => {
+   if (typeof output == type) {
+      return "";
+   } else {
+      return convertToEUFormat(output);
+   }
+}
+
+const convertToEUFormat = (output) => {
+   const stringedOutput = JSON.stringify(output);
+   const index = stringedOutput.indexOf(",");
+   const cuttedOutput = stringedOutput.slice(index + 2, index + 14);
+   const dateEUFormat = new Date(cuttedOutput);
+   const dayNumber = dateEUFormat.getDay();
+   const time = stringedOutput.slice(index + 15, index + 17);
+   return (dagen[dayNumber] + " " + convertDate(dateEUFormat) + ", " + durationTime(time));
+}
+
 export const convertDateTime = (dateTime) => {
    return convertDate(dateTime) + " " + convertTime(dateTime);
 }
 
 export const cutDate = (item) => {
-   const output = item.answers[61].prettyFormat;
-   const stringed = JSON.stringify(output);
-   if (typeof output == 'undefined') {
-      return "";
-   } else {
-      var index = stringed.indexOf(",");
-      const cutted = stringed.slice(index + 2, index + 14);
-      const dated = new Date(cutted);
-      var dagNumber = new Date(dated).getDay();
-      const time = stringed.slice(index + 15, index + 17);
-      // const newBeginTime = (parseInt(time) + 6);
-      // const newEndTime = (parseInt(time) + 8);
-      // const longBeginTime = (newBeginTime > 9 ? '' : 0).toString() + newBeginTime.toString() + ":00";
-      // const longEndTime = (newEndTime > 9 ? '' : 0).toString() + newEndTime.toString() + ":00";
-      return (dagen[dagNumber] + " " + convertDate(dated) + ", " + durationTime(time));
-   }
+   const input = item.answers[61].prettyFormat;
+   return (checkType(input, 'undefined'));
 }
+
+// export const sortBookings = (bookings) => {
+
+// }

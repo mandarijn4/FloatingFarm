@@ -1,5 +1,5 @@
 <template>
-   <div class="container rounded border bg-light shadow p-3">
+   <div class="container rounded border bg-light shadow p-3 mt-5 mb-3">
       <h4>Last 100 bookings</h4>
       <hr>
 
@@ -33,7 +33,6 @@
                   <strong>Kosten mogelijke extra's: </strong> {{ item.answers[27].answer }} <br />
                   <strong>Laten we kennismaken: </strong> {{ item.answers[25].answer }} <br />
                   <strong>Terms/Conditions: </strong> {{ item.answers[80].answer }} 
-                  <!-- <strong>Date: </strong> {{ cutDate(item) }} -->
                </div>
             </div>
          </div>
