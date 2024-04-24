@@ -7,33 +7,33 @@
          <div v-for="(item, index) in bookings" :key="index" class="accordion-item">
             <h2 class="accordion-header" :id="'headingB' + index">
                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" :data-bs-target="'#collapseB' + index" :aria-expanded="index === 0 ? 'true' : 'false'" :aria-controls="'collapse' + index">
-                  {{ item.answers[5].prettyFormat }} • {{ item.answers[61].prettyFormat }}
+                  {{ item.answers[5].prettyFormat }} • {{ cutDate(item) }}
                </button>
             </h2>
 
             <div :id="'collapseB' + index" class="accordion-collapse collapse" :aria-labelledby="'headingB' + index" data-bs-parent="#accordionB">
                <div class="accordion-body">
-                  <strong>Afspraak: </strong> {{ item.answers[61].prettyFormat }} <br />
+                  <strong>Afspraak: </strong> {{ cutDate(item) }} <br />
                   <strong>Naam contactpersoon: </strong> {{ item.answers[5].prettyFormat }} <br />
                   <strong>Adres: </strong> {{ item.answers[9].prettyFormat }} <br />
                   <strong>E-mailadres: </strong> {{ item.answers[7].answer }} <br />
                   <strong>Telefoonnummer: </strong> {{ item.answers[8].prettyFormat }} <br />
                   <strong>Type bezoek: </strong> {{ item.answers[19].answer }} <br />
                   <strong>Type pakket: </strong> {{ item.answers[21].answer }} <br />
-                  <strong>Exact aantal personen: </strong> {{ item.answers[48].answer }} <br />
-                  <strong>Proeverij: </strong> {{ item.answers[54].answer }} <br />
-                  <strong>FF Goodiebag: </strong> {{ item.answers[35].answer }} <br />
-                  <strong>FF Founders Fee: </strong> {{ item.answers[36].answer }} <br />
-                  <strong>Lunchbox: </strong> {{ item.answers[37].answer }} <br />
-                  <strong>Borrel: </strong> {{ item.answers[38].answer }} <br />
-                  <strong>Diner: </strong> {{ item.answers[39].answer }} <br />
-                  <strong>Mix Brownies Boterkoek: </strong> {{ item.answers[78].answer }} <br />
-                  <strong>Kaasplank: </strong> {{ item.answers[77].answer }} <br />
+                  <div v-if="item.answers[48].answer"><strong>Exact aantal personen: </strong> {{ item.answers[48].answer }}</div>
+                  <div v-if="item.answers[54].answer"><strong>Proeverij: </strong> {{ item.answers[54].answer }}</div>
+                  <div v-if="item.answers[35].answer"><strong>FF Goodiebag: </strong> {{ item.answers[35].answer }}</div>
+                  <div v-if="item.answers[36].answer"><strong>FF Founders Fee: </strong> {{ item.answers[36].answer }}</div>
+                  <div v-if="item.answers[37].answer"><strong>Lunchbox: </strong> {{ item.answers[37].answer }}</div>
+                  <div v-if="item.answers[38].answer"><strong>Borrel: </strong> {{ item.answers[38].answer }}</div>
+                  <div v-if="item.answers[39].answer"><strong>Diner: </strong> {{ item.answers[39].answer }}</div>
+                  <div v-if="item.answers[78].answer"><strong>Mix Brownies Boterkoek: </strong> {{ item.answers[78].answer }}</div>
+                  <div v-if="item.answers[77].answer"><strong>Kaasplank: </strong> {{ item.answers[77].answer }}</div>
                   <strong>Kosten basis: </strong> {{ item.answers[26].answer }} <br />
                   <strong>Kosten mogelijke extra's: </strong> {{ item.answers[27].answer }} <br />
                   <strong>Laten we kennismaken: </strong> {{ item.answers[25].answer }} <br />
-                  <strong>Terms/Conditions: </strong> {{ item.answers[80].answer }} <br />
-                  <strong>Date: </strong> {{ cutDate(item) }}
+                  <strong>Terms/Conditions: </strong> {{ item.answers[80].answer }} 
+                  <!-- <strong>Date: </strong> {{ cutDate(item) }} -->
                </div>
             </div>
          </div>
@@ -83,7 +83,12 @@ export default {
             var dagNumber = new Date(dated).getDay();
             // console.log("Dagnummer: ", dagNumber);
             // console.log("Dag: ", dagen[dagNumber]);
-            return (dagen[dagNumber] + " " + date);
+            const time = stringed.slice(index + 15, index + 17);
+            const newBeginTime = (parseInt(time) + 6);
+            const newEndTime = (parseInt(time) + 8);
+            const longBeginTime = (newBeginTime > 9 ? '' : 0).toString() + newBeginTime.toString() + ":00";
+            const longEndTime = (newEndTime > 9 ? '' : 0).toString() + newEndTime.toString() + ":00";
+            return (dagen[dagNumber] + " " + date + ", " + longBeginTime + " - " + longEndTime);
          }
       }
    }
