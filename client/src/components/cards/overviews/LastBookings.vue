@@ -44,9 +44,9 @@
 <script>
 import { ref } from "vue";
 import { getBookings } from "../../../jotformApi";
+import { cutDate } from '@/utils/globalFunctions'
 
 var listOfBookings = ref([]);
-const dagen = ["Zondag", "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag"];
 // var date = "";
 // var sortedListOfBookings = ref([]);
 
@@ -66,31 +66,7 @@ export default {
       }
    },
    methods: {
-      cutDate(item) {
-         const output = item.answers[61].prettyFormat;
-         // console.log(typeof(output));
-         const stringed = JSON.stringify(output);
-         // console.log("Stringed date: ", stringed);
-         if (typeof output == 'undefined') {
-            return "";
-         } else {
-            var index = stringed.indexOf(",");
-            const cutted = stringed.slice(index + 2, index + 14);
-            const dated = new Date(cutted);
-            var date = (new Date(dated).getDate() > 9 ? '' : 0).toString() + (new Date(dated).getDate()).toString() 
-               + "–" + ((new Date(dated).getMonth() + 1) > 9 ? '' : 0) + (new Date(dated).getMonth() + 1) 
-               + "–" + new Date(dated).getFullYear();
-            var dagNumber = new Date(dated).getDay();
-            // console.log("Dagnummer: ", dagNumber);
-            // console.log("Dag: ", dagen[dagNumber]);
-            const time = stringed.slice(index + 15, index + 17);
-            const newBeginTime = (parseInt(time) + 6);
-            const newEndTime = (parseInt(time) + 8);
-            const longBeginTime = (newBeginTime > 9 ? '' : 0).toString() + newBeginTime.toString() + ":00";
-            const longEndTime = (newEndTime > 9 ? '' : 0).toString() + newEndTime.toString() + ":00";
-            return (dagen[dagNumber] + " " + date + ", " + longBeginTime + " - " + longEndTime);
-         }
-      }
+      cutDate
    }
 }
 </script>

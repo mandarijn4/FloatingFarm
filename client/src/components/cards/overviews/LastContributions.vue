@@ -35,6 +35,7 @@
 <script>
     import { ref } from 'vue';
     import { getContributionsLastWeeks } from '../../../apiConfig';
+    import { convertDateTime } from '../../../utils/globalFunctions';
     
     var listOfContributions = ref([]);
 
@@ -52,15 +53,7 @@
             };
         },
         methods: {
-            convertDateTime(dateTime) {
-                // var date = new Date(dateTime).getFullYear() + "-" + (new Date(dateTime).getMonth() + 1) + "-" + new Date(dateTime).getDate();
-                var date = (new Date(dateTime).getDate() > 9 ? '' : 0).toString() + (new Date(dateTime).getDate()).toString() 
-                    + "–" + ((new Date(dateTime).getMonth() + 1) > 9 ? '' : 0) + (new Date(dateTime).getMonth() + 1) 
-                    + "–" + new Date(dateTime).getFullYear();
-                var time = ((new Date(dateTime).getHours() - 1 ) > 9 ? '' : 0).toString() + (new Date(dateTime).getHours() - 1).toString()
-                    + ":" + (new Date(dateTime).getMinutes() > 9 ? '' : 0) + new Date(dateTime).getMinutes();
-                return date + " " + time;
-            }
+            convertDateTiime: convertDateTime
         }
     }
 </script>
