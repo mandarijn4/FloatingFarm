@@ -39,6 +39,15 @@ const convertToEUFormat = (output) => {
    return (dagen[dayNumber] + " " + convertDate(dateEUFormat) + ", " + durationTime(time));
 }
 
+const sliceDate = (input) => {
+   const stringedInput = JSON.stringify(input);
+   const commaIndex = stringedInput.indexOf(",");
+   const outputDate = new Date(stringedInput.slice(commaIndex + 2, commaIndex + 14));
+   const outputTime = stringedInput.slice(commaIndex + 15, commaIndex + 17);
+   outputDate.setHours(outputTime);
+   return outputDate;
+}
+
 export const convertDateTime = (dateTime) => {
    return convertDate(dateTime) + " " + convertTime(dateTime);
 }
@@ -48,6 +57,29 @@ export const cutDate = (item) => {
    return (checkType(input, 'undefined'));
 }
 
-// export const sortBookings = (bookings) => {
-
-// }
+export const sortBookings = (bookings) => {
+   const normalizedValue = [];
+   const returnValue = [];
+   const currentDate = new Date();
+   currentDate.setDate(currentDate.getDate() - 1);
+   // const lastDate = "";
+   // const bookingsLength = bookings.length;
+   // return bookingsLength;
+   for (let index = 0; index < bookings.length; index++) {
+      const element = bookings[index];
+      if (typeof(element.answers[61].prettyFormat ) != 'undefined') {
+         normalizedValue.push(element);
+      }
+   }
+   for (let index = 0; index < normalizedValue.length; index++) {
+      const element = normalizedValue[index];
+      const stringedOutput = JSON.stringify(normalizedValue[index].answers[61].prettyFormat);
+      const commaIndex = stringedOutput.indexOf(", ");
+      const date = new Date(stringedOutput.slice(commaIndex + 2, commaIndex + 14));
+      if (date > currentDate) {
+         returnValue.push(element);
+      }
+   }
+   returnValue.sort((a, b) => sliceDate(a.answers[61].prettyFormat)- sliceDate(b.answers[61].prettyFormat));
+   return returnValue;
+}

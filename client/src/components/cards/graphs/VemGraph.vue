@@ -12,7 +12,7 @@
 import { ref } from 'vue'
 import { Bar } from 'vue-chartjs'
 import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, PointElement, LineController, LineElement } from 'chart.js'
-import { getNutrientsOfMixes } from '../../../apiConfig'
+import { getNutrientsOfMixes } from '@/apiConfig'
 
 // Check which ones are really needed
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, PointElement, LineController, LineElement);

@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import { deleteMix } from '../../../apiConfig';
+import { deleteMix } from '@/apiConfig';
 
 export default {
    name: 'DeleteMix',

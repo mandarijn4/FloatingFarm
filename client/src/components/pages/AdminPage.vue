@@ -22,6 +22,9 @@
 
    <!-- Milk graph -->
    <GraphContainer />
+
+   <!-- Upcomming Bookings -->
+   <LastBookings />
 </template>
 
 <script>
@@ -31,6 +34,7 @@ import LastMixes from '../cards/overviews/LastMixes.vue';
 import DeleteMix from '../cards/mix/DeleteMix.vue';
 import StockContainer from '../cards/stock/StockContainer.vue';
 import GraphContainer from '../cards/graphs/GraphContainer.vue';
+import LastBookings from '../cards/overviews/LastBookings.vue';
 
 export default {
    name: 'AdminPage',
@@ -40,7 +44,8 @@ export default {
       LastMixes,
       StockContainer,
       GraphContainer,
-      DeleteMix
+      DeleteMix,
+      LastBookings
    }
 }
 </script>

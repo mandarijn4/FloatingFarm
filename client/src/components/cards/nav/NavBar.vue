@@ -25,7 +25,7 @@
 
 <script>
 	import AuthInformation from './AuthInformation.vue';
-	import { store } from '../../../store';
+	import { store } from '@/store';
 
 	export default {
 		name: 'NavBar',

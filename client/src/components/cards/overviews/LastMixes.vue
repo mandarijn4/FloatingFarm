@@ -5,7 +5,7 @@
       <hr>
 
       <div class="accordion" id="accordionM">
-         <div v-for="(item, index) in mixes" :key="index" class="accordion-item">
+         <div v-for="(item, index) in mixes.slice().reverse()" :key="index" class="accordion-item">
 
             <h2 class="accordion-header" :id="'headingM' + index">
                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
@@ -36,7 +36,7 @@
 
 <script>
 import { ref } from 'vue';
-import { getMixesLastWeeks } from '../../../apiConfig';
+import { getMixesLastWeeks } from '@/apiConfig';
 import { convertDateTime } from '@/utils/globalFunctions';
 
 var listOfMixes = ref([]);

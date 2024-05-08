@@ -790,7 +790,7 @@ router.get('/getContributionsLastWeeks', passport.authenticate('oauth-bearer', {
 router.get('/getMixesLastWeeks', passport.authenticate('oauth-bearer', { session: false }),
    (req, res) => {
       // Check for Admin role
-      validRole(req.authInfo['oid'], [2, 5]).then(() => {
+      validRole(req.authInfo['oid'], [2, 5, 9, 10]).then(() => {
          // Retrieve date and time two weeks back
          const weeksAgo = new Date();
          var weeks = req.query.weeks;
@@ -848,7 +848,7 @@ router.get('/getMixesLastWeeks', passport.authenticate('oauth-bearer', { session
 router.get('/getNutrientsOfMixes', passport.authenticate('oauth-bearer', { session: false }),
    (req, res) => {
       // Check for Presenter role
-      validRole(req.authInfo['oid'], [2, 5, 6]).then(() => {
+      validRole(req.authInfo['oid'], [2, 5, 6, 9, 10]).then(() => {
          query(`
                 SELECT
                     pim.mixID,

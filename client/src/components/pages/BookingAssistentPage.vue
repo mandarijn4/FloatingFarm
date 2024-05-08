@@ -4,7 +4,7 @@
 </template>
 
 <script>
-import LastBookings from '../cards/overviews/LastBookings.vue';
+import LastBookings from '@/components/cards/overviews/LastBookings.vue'
 
    export default {
       name: 'BookingAssistentPage',

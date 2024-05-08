@@ -30,7 +30,7 @@
 <script>
     import { ref } from 'vue';
     import UserInformation from './UserInformation.vue'
-    import { getUsers, getRoles, getSuppliers } from '../../../apiConfig';
+   import { getUsers, getRoles, getSuppliers } from '@/apiConfig'
     
     var listOfUsers = ref([]);
     var listOfRoles = ref([]);

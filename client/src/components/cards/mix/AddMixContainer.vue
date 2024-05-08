@@ -115,7 +115,7 @@
 <script>
 import { ref } from "vue";
 import ExtraProduct from "./ExtraProduct.vue";
-import { getProducts, addMix } from "../../../apiConfig";
+import { getProducts, addMix } from "@/apiConfig";
 
 var listOfProducts = ref([]);
 // var mixID = ref([]);

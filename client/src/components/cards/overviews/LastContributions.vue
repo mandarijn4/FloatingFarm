@@ -34,8 +34,8 @@
 
 <script>
     import { ref } from 'vue';
-    import { getContributionsLastWeeks } from '../../../apiConfig';
-    import { convertDateTime } from '../../../utils/globalFunctions';
+    import { getContributionsLastWeeks } from '@/apiConfig';
+    import { convertDateTime } from '@/utils/globalFunctions';
     
     var listOfContributions = ref([]);
 

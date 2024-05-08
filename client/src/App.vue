@@ -5,7 +5,6 @@
       <WelcomePage />
    </div>
    <div v-else>
-
       <div v-if="roleId == 1">
          <GuestPage />
       </div>
@@ -31,7 +30,12 @@
       <div v-if="roleId == 8">
          <BookingAssistentPage />
       </div>
-
+      <div v-if="roleId == 9">
+         <ManonPage />
+      </div>
+      <div v-if="roleId == 10">
+         <ReinierPage />
+      </div>
    </div>
 </template>
 
@@ -49,6 +53,8 @@ import FarmerPage from './components/pages/FarmerPage.vue';
 import PresenterPage from './components/pages/PresenterPage.vue';
 import DriverPage from './components/pages/DriverPage.vue';
 import BookingAssistentPage from './components/pages/BookingAssistentPage.vue';
+import ManonPage from './components/pages/ManonPage.vue'
+import ReinierPage from './components/pages/ReinierPage.vue'
 
 export default {
    name: 'App',
@@ -63,7 +69,9 @@ export default {
       FarmerPage,
       PresenterPage,
       DriverPage,
-      BookingAssistentPage
+      BookingAssistentPage, 
+      ManonPage,
+      ReinierPage
    },
    data() {
       return {

@@ -100,7 +100,7 @@
 <script>
 import { ref, toRef } from 'vue';
 import ExtraProduct from "./ExtraProduct.vue";
-import { getProducts, getContainers, getSuppliers, addContribution } from "../../../apiConfig";
+import { getProducts, getContainers, getSuppliers, addContribution } from "@/apiConfig";
 
 var listOfProducts = ref([]);
 var listOfContainers = ref([]);

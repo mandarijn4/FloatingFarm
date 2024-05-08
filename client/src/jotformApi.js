@@ -8,7 +8,7 @@ import axios from "axios";
 // const limit = "%limit=1000"
 
 // const completeUrl = apiUrl1 + formNumber + apiUrl2 + apiKey + limit;
-const completeUrl = "https://eu-api.jotform.com/form/240593413654356/submissions?apiKey=3d02a42ca6f7ebf793b9c6fb3eb84ad9&limit=100"
+const completeUrl = "https://eu-api.jotform.com/form/240593413654356/submissions?apiKey=3d02a42ca6f7ebf793b9c6fb3eb84ad9&limit=1000"
 
 export function getBookings() {
    // const response = completeUrl;

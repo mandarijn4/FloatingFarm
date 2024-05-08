@@ -22,7 +22,7 @@
 <script>
 import { ref } from "vue";
 import ProductInformation from "./ProductInformation.vue";
-import { getStock, updateStock } from "../../../apiConfig";
+import { getStock, updateStock } from "@/apiConfig";
 var listOfStockProducts = ref([]);
 export default {
    name: 'StockContainer',
