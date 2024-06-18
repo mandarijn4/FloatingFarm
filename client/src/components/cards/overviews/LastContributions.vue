@@ -53,7 +53,7 @@
             };
         },
         methods: {
-            convertDateTiime: convertDateTime
+            convertDateTime: convertDateTime
         }
     }
 </script>

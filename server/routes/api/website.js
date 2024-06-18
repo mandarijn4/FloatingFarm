@@ -277,11 +277,31 @@ router.post('/deleteUser', passport.authenticate('oauth-bearer', { session: fals
    }
 );
 
+router.get('/getSupplierID', passport.authenticate('oauth-bearer', { session: false }),
+   (req, res) => {
+      validRole(req.authInfo['oid'], [2]).then(() => {
+         query(
+            `SELECT users.supplierID FROM users WHERE users.b2cObjectID = ?`,
+            [req.authInfo['oid']],
+            ((results, fields) => {
+               if (results) {
+                  // const supplierID = results[0].supplierID;
+                  res.status(200).send(results[0]);
+               } else {
+                  res.status(500).send();  
+               }             
+            })
+         );
+      }).catch(() => {
+         res.status(401).send();
+      })
+   })
+
 // Get a list of products
 router.get('/getProducts', passport.authenticate('oauth-bearer', { session: false }),
    (req, res) => {
       // Check for Supplier or Farmer or Driver role
-      validRole(req.authInfo['oid'], [3, 5, 7]).then(() => {
+      validRole(req.authInfo['oid'], [3, 5, 7, 10]).then(() => {
          query(
             `SELECT products.ID, products.name FROM products;`,
             [],
@@ -442,7 +462,7 @@ router.post('/addMix', passport.authenticate('oauth-bearer', { session: false })
 router.get('/getContainers', passport.authenticate('oauth-bearer', { session: false }),
    (req, res) => {
       // Check for Supplier or Driver role
-      validRole(req.authInfo['oid'], [3, 7]).then(() => {
+      validRole(req.authInfo['oid'], [3, 7, 10]).then(() => {
          query(
             `SELECT containers.ID, containers.name, containers.litres FROM containers;`,
             [],
@@ -465,7 +485,7 @@ function addContribution(supplierId, currentDateTime, dateTime, isDelivery, note
    query(
       `INSERT INTO contributions (supplierID, dateTime, dateTimeOfTransport, isDelivery, supplierNotes, accorded)
         VALUES (?, ?, ?, ?, ?, ?);`,
-      [supplierId, currentDateTime, dateTime, isDelivery, notes, 'false'],
+      [supplierId, currentDateTime, dateTime, isDelivery, notes, 0],
       ((results, fields) => {
          if (results.affectedRows == 1) {
             const contributionId = results.insertId;
@@ -480,7 +500,7 @@ function addContribution(supplierId, currentDateTime, dateTime, isDelivery, note
                   const productName = (product.id === null) ? product.name : null;
                   const containerName = (product.containerId === null) ? product.containerName : null;
                   // Add to products that will be send with query
-                  products.push(contributionId, product.id, product.containerId, productName, product.quantity, containerName, 'false');
+                  products.push(contributionId, product.id, product.containerId, productName, product.quantity, containerName, 0);
 
                   // Update found products
                   if (product.id !== null) {
@@ -514,7 +534,7 @@ function addContribution(supplierId, currentDateTime, dateTime, isDelivery, note
                // Update stock
                query(
                   `UPDATE products SET kilosInStock = GREATEST(kilosInStock + ?, 0) WHERE ID = ?;`,
-                  [products[products.length - 2], products[products.length - 6]],
+                  [products[products.length - 3], products[products.length - 6]],
                   ((results, fields) => {
                      if (results.affectedRows == 1) {
                         console.log("Stock updated");
@@ -546,7 +566,7 @@ router.post('/addContribution', passport.authenticate('oauth-bearer', { session:
    (req, res) => {
       // Check for Supplier or Driver role
       console.log("Check Role");
-      validRole(req.authInfo['oid'], [3, 7]).then((roleId) => {
+      validRole(req.authInfo['oid'], [3, 7, 10]).then((roleId, b2cObjectID) => {
          // Check if all given values are ok
          console.log("Check given values");
          const regex = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/;
@@ -554,7 +574,7 @@ router.post('/addContribution', passport.authenticate('oauth-bearer', { session:
          const isDeliveryOk = req.body.hasOwnProperty('isDelivery') && (req.body.isDelivery === true || req.body.isDelivery === false);
          const supplierIdOk = req.body.hasOwnProperty('supplierId') && ((roleId === 7) ? (typeof req.body.supplierId === 'number' && req.body.supplierId > 0) : req.body.supplierId === null);
          const notesOk = req.body.hasOwnProperty('notes') && (req.body.notes.length < 256 || req.body.notes === null);
-         const isAccordedOk = req.body.hasOwnProperty('isAccorded') && (req.body.isAccorded === true || req.body.isAccorded === false);
+         // const isAccordedOk = req.body.hasOwnProperty('isAccorded') && (req.body.isAccorded === true || req.body.isAccorded === false);
          var productsInContributionOk = req.body.hasOwnProperty('productsInContribution') && req.body.productsInContribution !== null;
          var allProductsInContributionEmpty = true;
          console.log("Check products");
@@ -584,7 +604,7 @@ router.post('/addContribution', passport.authenticate('oauth-bearer', { session:
             productsInContributionOk = false;
          }
          // If not, send code bad request
-         if (!dateTimeOk || !isDeliveryOk || !supplierIdOk || !notesOk || !productsInContributionOk || !isAccordedOk ) {
+         if (!dateTimeOk || !isDeliveryOk || !supplierIdOk || !notesOk || !productsInContributionOk) {
             console.log("body: ", req.body);
             res.status(400).send();
          } else {
@@ -611,7 +631,7 @@ router.post('/addContribution', passport.authenticate('oauth-bearer', { session:
                         const supplierId = results[0].supplierID;
 
                         // Add a contribution with retrieved supplier id
-                        addContribution(supplierId, currentDateTime, req.body.dateTime, req.body.isDelivery, req.body.notes, req.body.productsInContribution, req.body.isAccorded, res);
+                        addContribution(supplierId, currentDateTime, req.body.dateTime, req.body.isDelivery, req.body.notes, req.body.productsInContribution, res);
 
                      } else {
                         res.status(500).send();
@@ -621,7 +641,7 @@ router.post('/addContribution', passport.authenticate('oauth-bearer', { session:
                // User has driver role
             } else {
                // Add a contribution with given supplier id
-               addContribution(req.body.supplierId, currentDateTime, req.body.dateTime, req.body.isDelivery, req.body.notes, req.body.productsInContribution, req.body.isAccorded, res);
+               addContribution(req.body.supplierId, currentDateTime, req.body.dateTime, req.body.isDelivery, req.body.notes, req.body.productsInContribution, res);
             }
          }
       }).catch(() => {
@@ -634,7 +654,7 @@ router.post('/addContribution', passport.authenticate('oauth-bearer', { session:
 router.get('/getStock', passport.authenticate('oauth-bearer', { session: false }),
    (req, res) => {
       // Check for Admin or Supplier or Farmer or Presenter role
-      validRole(req.authInfo['oid'], [2, 3, 5, 6]).then(() => {
+      validRole(req.authInfo['oid'], [2, 3, 5, 6, 10]).then(() => {
          query(
             `SELECT products.ID, products.name, products.kilosInStock FROM products;`,
             [],
@@ -656,7 +676,7 @@ router.get('/getStock', passport.authenticate('oauth-bearer', { session: false }
 router.post('/updateStock', passport.authenticate('oauth-bearer', { session: false }),
    (req, res) => {
       // Check for Admin or Farmer role
-      validRole(req.authInfo['oid'], [2, 5]).then(() => {
+      validRole(req.authInfo['oid'], [2, 5, 10]).then(() => {
          // Check if all given values are ok
          var stockProductsOk = req.body.hasOwnProperty('products') && req.body.products !== null;
          console.log("stockProductsOk: ", stockProductsOk);

@@ -62,6 +62,8 @@ export const sortBookings = (bookings) => {
    const returnValue = [];
    const currentDate = new Date();
    currentDate.setDate(currentDate.getDate() - 1);
+   const upcommingDate = new Date();
+   upcommingDate.setDate(upcommingDate.getDate() + 56);
    // const lastDate = "";
    // const bookingsLength = bookings.length;
    // return bookingsLength;
@@ -76,8 +78,10 @@ export const sortBookings = (bookings) => {
       const stringedOutput = JSON.stringify(normalizedValue[index].answers[61].prettyFormat);
       const commaIndex = stringedOutput.indexOf(", ");
       const date = new Date(stringedOutput.slice(commaIndex + 2, commaIndex + 14));
-      if (date > currentDate) {
+      if (date > currentDate && date < upcommingDate) {
+         // if (date < upcommingDate) {
          returnValue.push(element);
+         // }
       }
    }
    returnValue.sort((a, b) => sliceDate(a.answers[61].prettyFormat)- sliceDate(b.answers[61].prettyFormat));

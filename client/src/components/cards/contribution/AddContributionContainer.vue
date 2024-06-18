@@ -140,7 +140,7 @@ export default {
          console.log(productsInContribution);
          console.log(this.date + " " + this.time, this.isDelivery, this.selectedSupplier, this.notes, this.isAccorded);
 
-         addContribution(productsInContribution, this.date + " " + this.time, this.isDelivery, this.selectedSupplier, this.notes, this.isAccorded)
+         addContribution(productsInContribution, this.date + " " + this.time, this.isDelivery, this.selectedSupplier, this.notes)
             .then(() => {
                console.log("Succeeded to add contribution");
                // Reset variables
@@ -183,7 +183,8 @@ export default {
             console.log("retrieved products: ", products);
             listOfProducts.value = products;
          });
-         location.reload();
+
+         // location.reload();
       },
       // Remove the alert at the specified index
       hideAlert(index) {
@@ -226,7 +227,7 @@ export default {
          containers: listOfContainers,
          suppliers: listOfSuppliers,
          selectedSupplier: null,
-         isAccorded: 'false',
+         // isAccorded: 'false',
          // Set a default for the array so that one empty product is displayed
          extraProductsInContribution: [{ id: null, name: '', quantity: 0, containerId: null, containerName: '' }],
          date: currentDate,

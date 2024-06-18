@@ -231,6 +231,24 @@ export function getLastMixID() {
    });
 }
 
+export function getSupplierID() {
+   return new Promise((resolve, reject) => {
+      // Try with stored access token
+      simpleGetApi(env.apiBase + "/api/website/getSupplierID", store.accessToken).then((supplierID) => {
+         resolve(supplierID);
+         // Try with acquired access token
+      }).catch(async () => {
+         await getTokenRedirect();
+         simpleGetApi(env.apiBase + "/api/website/getSupplierID", store.accessToken).then((supplierID) => {
+            resolve(supplierID);
+         }).catch((error) => {
+            console.error("Failed to get supplier ID: ", error);
+            reject();
+         });
+      });
+   });
+}
+
 // Retrieve containers
 export function getContainers() {
    return new Promise((resolve, reject) => {
